@@ -1,0 +1,22 @@
+{
+    "name": "haoyuqi/download-bing-wallpaper",
+    "description": "Download bing wallpaper",
+    "type": "library",
+    "require": {
+        "php": "^7.3|^8.0",
+        "illuminate/support": "^8|^9",
+        "guzzlehttp/guzzle": "^7.4"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Haoyuqi\\DownloadBingWallpaper\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Hao Yuqi",
+            "email": "hi.haoyuqi+github@gmail.com"
+        }
+    ]
+}
