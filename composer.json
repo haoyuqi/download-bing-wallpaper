@@ -22,7 +22,7 @@
     ],
     "extra": {
         "laravel": {
-            "provider": [
+            "providers": [
                 "Haoyuqi\\DownloadBingWallpaper\\ServiceProvider"
             ]
         }
