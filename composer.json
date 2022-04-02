@@ -5,7 +5,8 @@
     "require": {
         "php": "^7.3|^8.0",
         "illuminate/support": "^8|^9",
-        "guzzlehttp/guzzle": "^7.4"
+        "guzzlehttp/guzzle": "^7.4",
+        "illuminate/filesystem": "^8|^9"
     },
     "license": "MIT",
     "autoload": {
@@ -18,5 +19,12 @@
             "name": "Hao Yuqi",
             "email": "hi.haoyuqi+github@gmail.com"
         }
-    ]
+    ],
+    "extra": {
+        "laravel": {
+            "provider": [
+                "Haoyuqi\\DownloadBingWallpaper\\ServiceProvider"
+            ]
+        }
+    }
 }

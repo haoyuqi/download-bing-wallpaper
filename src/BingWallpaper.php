@@ -2,19 +2,31 @@
 
 namespace Haoyuqi\DownloadBingWallpaper;
 
+use Haoyuqi\DownloadBingWallpaper\Contracts\BingWallpaperInterface;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\File;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Carbon;
 
-class BingWallpaper
+class BingWallpaper implements BingWallpaperInterface
 {
-    public function download($save_path)
+    public function download()
     {
         $client = new Client();
+        $response = $client->request('GET', 'https://bing.ioliu.cn/v1?w=1920&h=1200');
 
-        $client->get('https://bing.ioliu.cn/v1?w=1920&h=1200', [
-            'sink' => $save_path
-        ]);
+        return $response->getBody()->getContents();
+    }
 
-        return File::exists($save_path);
+    public function save($content, $save_path, $file_name = null)
+    {
+        $filesystem = new Filesystem();
+
+        $file_name = $file_name ?? Carbon::today()->toDateString() . 'png';
+
+        if (!$filesystem->exists($save_path)) {
+            $filesystem->makeDirectory($save_path);
+        }
+
+        return (bool)$filesystem->put($save_path . '/' . $file_name, $content);
     }
 }
