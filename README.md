@@ -1,5 +1,4 @@
 # Download Bing Wallpaper
-*****
 
 ## Installation
 
