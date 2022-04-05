@@ -24,7 +24,7 @@ class BingWallpaper implements BingWallpaperInterface
         $file_name = $file_name ?? Carbon::today()->toDateString() . 'png';
 
         if (!$filesystem->exists($save_path)) {
-            $filesystem->makeDirectory($save_path);
+            $filesystem->makeDirectory($save_path, 0755, true);
         }
 
         return (bool)$filesystem->put($save_path . '/' . $file_name, $content);
