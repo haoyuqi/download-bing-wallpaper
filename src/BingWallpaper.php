@@ -12,7 +12,13 @@ class BingWallpaper implements BingWallpaperInterface
     public function download()
     {
         $client = new Client();
-        $response = $client->request('GET', 'https://bing.ioliu.cn/v1?w=1920&h=1200');
+
+        $response = $client->request('GET', 'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');
+
+        $data = json_decode($response->getBody()->getContents(), true);
+        $image_url = 'https://www.bing.com' . $data['images'][0]['url'];
+
+        $response = $client->request('GET', $image_url);
 
         return $response->getBody()->getContents();
     }
