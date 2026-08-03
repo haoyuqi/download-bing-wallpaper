@@ -26,5 +26,9 @@
                 "Haoyuqi\\DownloadBingWallpaper\\ServiceProvider"
             ]
         }
+    },
+    "require-dev": {
+        "laravel/pint": "^1.30",
+        "phpstan/phpstan": "^2.2"
     }
 }
