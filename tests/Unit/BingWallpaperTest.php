@@ -26,9 +26,8 @@ class BingWallpaperTest extends TestCase
 
     public function test_save_creates_the_directory_and_writes_the_named_file(): void
     {
-        $path = storage_path('framework/testing/bing-wallpaper-save-test');
+        $path = storage_path('framework/testing/' . uniqid('bing-wallpaper-save-test-', true));
 
-        File::deleteDirectory($path);
         $this->assertDirectoryDoesNotExist($path);
 
         try {
