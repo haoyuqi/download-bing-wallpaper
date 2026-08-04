@@ -8,6 +8,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Haoyuqi\DownloadBingWallpaper\BingWallpaper;
 use Haoyuqi\DownloadBingWallpaper\Tests\TestCase;
+use Illuminate\Support\Facades\File;
 
 class BingWallpaperTest extends TestCase
 {
@@ -21,5 +22,23 @@ class BingWallpaperTest extends TestCase
         $wallpaper = new BingWallpaper($client);
 
         $this->assertSame('image-content', $wallpaper->download());
+    }
+
+    public function test_save_creates_the_directory_and_writes_the_named_file(): void
+    {
+        $path = storage_path('framework/testing/bing-wallpaper-save-test');
+
+        File::deleteDirectory($path);
+        $this->assertDirectoryDoesNotExist($path);
+
+        try {
+            $wallpaper = new BingWallpaper();
+
+            $this->assertTrue($wallpaper->save('image-content', $path, 'wallpaper.png'));
+            $this->assertDirectoryExists($path);
+            $this->assertSame('image-content', File::get($path . '/wallpaper.png'));
+        } finally {
+            File::deleteDirectory($path);
+        }
     }
 }
