@@ -14,6 +14,18 @@
             "Haoyuqi\\DownloadBingWallpaper\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Haoyuqi\\DownloadBingWallpaper\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.24|^7.0",
+        "phpunit/phpunit": "^9.6"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
     "authors": [
         {
             "name": "Hao Yuqi",
