@@ -4,4 +4,4 @@ composer.lock
 .DS_Store
 .idea/
 phpstan-tmp/
-
+.phpunit.result.cache

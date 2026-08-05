@@ -3,22 +3,29 @@
 namespace Haoyuqi\DownloadBingWallpaper;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Haoyuqi\DownloadBingWallpaper\Contracts\BingWallpaperInterface;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Carbon;
 
 class BingWallpaper implements BingWallpaperInterface
 {
+    /** @var ClientInterface */
+    protected $client;
+
+    public function __construct(?ClientInterface $client = null)
+    {
+        $this->client = $client ?? new Client;
+    }
+
     public function download()
     {
-        $client = new Client;
-
-        $response = $client->request('GET', 'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');
+        $response = $this->client->request('GET', 'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');
 
         $data = json_decode($response->getBody()->getContents(), true);
         $image_url = 'https://www.bing.com'.$data['images'][0]['url'];
 
-        $response = $client->request('GET', $image_url);
+        $response = $this->client->request('GET', $image_url);
 
         return $response->getBody()->getContents();
     }

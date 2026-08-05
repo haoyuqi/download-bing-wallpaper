@@ -14,6 +14,20 @@
             "Haoyuqi\\DownloadBingWallpaper\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Haoyuqi\\DownloadBingWallpaper\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "laravel/pint": "^1.30",
+        "orchestra/testbench": "^6.24|^7.0",
+        "phpstan/phpstan": "^2.2",
+        "phpunit/phpunit": "^9.6"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
     "authors": [
         {
             "name": "Hao Yuqi",
@@ -26,9 +40,5 @@
                 "Haoyuqi\\DownloadBingWallpaper\\ServiceProvider"
             ]
         }
-    },
-    "require-dev": {
-        "laravel/pint": "^1.30",
-        "phpstan/phpstan": "^2.2"
     }
 }
