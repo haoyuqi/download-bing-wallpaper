@@ -1,7 +1,5 @@
 # Download Bing Wallpaper
 
-> v3 is unreleased. It is a breaking replacement for the former image-download and file-save API.
-
 Laravel 13 package that retrieves Bing wallpaper metadata for an exact date and writes one versioned JSON document to standard output. It never downloads or saves an image.
 
 ## Requirements
@@ -38,5 +36,7 @@ The `BingWallpaperInterface`, `download()`, and `save()` APIs were removed. Use 
 ## Development
 
 Run `composer check` for validation, optimized autoloading, analysis, style, and tests. CI uses fake HTTP responses and does not contact Bing.
+
+This project was developed with AI assistance. All changes were reviewed and verified by the maintainer.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [SUPPORT.md](SUPPORT.md).
