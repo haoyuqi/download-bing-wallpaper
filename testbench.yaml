@@ -1,0 +1,7 @@
+laravel: '@testbench'
+
+providers:
+  - Haoyuqi\DownloadBingWallpaper\Tests\Fixtures\ProcessTestServiceProvider
+
+workbench:
+  install: true

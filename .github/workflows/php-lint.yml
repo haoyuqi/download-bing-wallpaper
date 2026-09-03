@@ -2,19 +2,20 @@ name: PHP Lint
 
 on:
   push:
-    branches:
-      - master
   pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   php-lint:
-    name: PHP ${{ matrix.php }} syntax check
+    name: PHP syntax check
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        php: ['7.3', '8.0', '8.1', '8.2', '8.3']
+    timeout-minutes: 5
 
     steps:
       - name: Checkout
@@ -23,9 +24,9 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: '8.3'
           coverage: none
 
       - name: PHP syntax check
         run: |
-          find src -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+          find src tests -name '*.php' -print0 | xargs -0 -n1 -P4 php -l

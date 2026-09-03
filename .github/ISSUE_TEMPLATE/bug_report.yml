@@ -1,0 +1,23 @@
+name: Bug report
+description: Report a reproducible package defect.
+labels: [bug]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Include the command, sanitized JSON output, and expected result.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: PHP and Laravel versions
+    validations:
+      required: true

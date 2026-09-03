@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Haoyuqi\DownloadBingWallpaper\Tests;
 
 use Haoyuqi\DownloadBingWallpaper\ServiceProvider;
