@@ -1,15 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Haoyuqi\DownloadBingWallpaper;
 
-use Haoyuqi\DownloadBingWallpaper\Contracts\BingWallpaperInterface;
+use Haoyuqi\DownloadBingWallpaper\Bing\BingWallpaperProvider;
+use Haoyuqi\DownloadBingWallpaper\Console\BingWallpaperCommand;
+use Haoyuqi\DownloadBingWallpaper\Contracts\WallpaperMetadataProvider;
+use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
-class ServiceProvider extends \Illuminate\Support\ServiceProvider
+final class ServiceProvider extends LaravelServiceProvider
 {
-    public function register()
+    public function register(): void
     {
-        parent::register();
+        $this->app->singleton(WallpaperMetadataProvider::class, BingWallpaperProvider::class);
+    }
 
-        $this->app->singleton(BingWallpaperInterface::class, BingWallpaper::class);
+    public function boot(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([BingWallpaperCommand::class]);
+        }
     }
 }

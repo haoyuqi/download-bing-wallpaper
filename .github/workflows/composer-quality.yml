@@ -1,4 +1,4 @@
-name: PHPStan
+name: Composer Quality
 
 on:
   push:
@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  phpstan:
-    name: Larastan / PHPStan
+  composer:
+    name: Manifest, autoload, and audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -26,8 +26,14 @@ jobs:
           tools: composer:2.10.3
           coverage: none
 
+      - name: Validate manifest
+        run: composer validate --strict --no-check-lock
+
       - name: Install dependencies
         run: composer update --no-interaction --prefer-dist --no-progress
 
-      - name: Static analysis
-        run: composer analyse
+      - name: Validate optimized autoloading
+        run: composer dump-autoload --optimize --strict-psr
+
+      - name: Audit dependencies
+        run: composer audit --no-interaction
