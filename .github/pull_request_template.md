@@ -1,9 +1,11 @@
 ## Summary
 
-Describe the focused change and its user-visible behavior.
+<!-- Describe the change and its effect. Note command JSON or exit-code compatibility changes when relevant. -->
 
-## Checks
+## Verification
 
-- [ ] Tests cover the change without live Bing requests.
-- [ ] `composer check` passes locally.
-- [ ] Documentation is updated when behavior changes.
+<!-- List checks run for this change. Mention fake HTTP tests when relevant. -->
+
+## Additional notes
+
+<!-- Add context reviewers need; link a related issue here if useful. -->
