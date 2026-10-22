@@ -1,23 +1,42 @@
 name: Bug report
-description: Report a reproducible package defect.
+description: Report a reproducible package problem.
 labels: [bug]
 body:
   - type: textarea
-    id: summary
+    id: problem
     attributes:
-      label: What happened?
+      label: Problem and actual behavior
+      description: What happened? Include the actual JSON output and exit code.
     validations:
       required: true
   - type: textarea
-    id: reproduce
+    id: reproduction
     attributes:
       label: Reproduction
-      description: Include the command, sanitized JSON output, and expected result.
+      description: Include the steps or command and the date you reproduced the problem.
     validations:
       required: true
-  - type: input
-    id: versions
+  - type: textarea
+    id: expected
     attributes:
-      label: PHP and Laravel versions
+      label: Expected behavior
     validations:
       required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Give the installed package version or commit, exact PHP version, and exact Laravel version.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots (optional)
+      description: Remove secrets and personal data before sharing.
