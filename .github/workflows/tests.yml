@@ -29,6 +29,8 @@ jobs:
             dependencies: stable
           - php: '8.4'
             dependencies: stable
+          - php: '8.5'
+            dependencies: stable
 
     steps:
       - name: Checkout
@@ -40,9 +42,20 @@ jobs:
           php-version: ${{ matrix.php }}
           tools: composer:2.10.3
           coverage: none
+        env:
+          update: 'true'
+
+      - name: Verify patched PHP runtime
+        run: php .github/scripts/check-php.php
 
       - name: Install dependencies
         run: composer update --no-interaction --prefer-dist --no-progress ${{ matrix.dependencies == 'lowest' && '--prefer-lowest' || '' }}
+
+      - name: Check actual platform requirements
+        run: composer check-platform-reqs
+
+      - name: Audit resolved dependencies
+        run: composer audit --locked --no-interaction
 
       - name: Run tests
         run: composer test
