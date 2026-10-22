@@ -1,6 +1,7 @@
 laravel: '@testbench'
 
 providers:
+  - Haoyuqi\DownloadBingWallpaper\ServiceProvider
   - Haoyuqi\DownloadBingWallpaper\Tests\Fixtures\ProcessTestServiceProvider
 
 workbench:
