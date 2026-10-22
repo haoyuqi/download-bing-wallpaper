@@ -27,7 +27,7 @@ final class BingWallpaperCommand extends Command
 
     public function handle(): int
     {
-        $date = $this->option('date');
+        $date = $this->input->getOption('date');
 
         if ($date === null) {
             return $this->emitError(

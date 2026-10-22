@@ -116,6 +116,19 @@ final class BingWallpaperCommandTest extends TestCase
         self::assertSame(0, $provider->calls);
     }
 
+    public function test_it_rejects_a_non_string_date_without_calling_the_provider(): void
+    {
+        $provider = new StubMetadataProvider(MetadataResult::notFound([]));
+
+        [$exitCode, $output] = $this->runCommand($provider, ['--date' => ['2026-08-31']]);
+        $payload = $this->decode($output);
+
+        self::assertSame(2, $exitCode);
+        self::assertNull($payload['query']['date']);
+        self::assertSame('INVALID_DATE', $payload['error']['code']);
+        self::assertSame(0, $provider->calls);
+    }
+
     public function test_it_preserves_an_explicit_empty_date_in_the_invalid_query(): void
     {
         $provider = new StubMetadataProvider(MetadataResult::notFound([]));
@@ -190,7 +203,7 @@ final class BingWallpaperCommandTest extends TestCase
     }
 
     /**
-     * @param  array<string, string>  $input
+     * @param  array<string, mixed>  $input
      * @return array{int, string}
      */
     private function runCommand(StubMetadataProvider $provider, array $input = []): array
