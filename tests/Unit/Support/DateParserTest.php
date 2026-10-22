@@ -7,9 +7,25 @@ namespace Haoyuqi\DownloadBingWallpaper\Tests\Unit\Support;
 use Haoyuqi\DownloadBingWallpaper\Support\DateParser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 final class DateParserTest extends TestCase
 {
+    public function test_its_constructor_is_private_and_has_no_initialization_side_effects(): void
+    {
+        $reflection = new ReflectionClass(DateParser::class);
+        $constructor = $reflection->getConstructor();
+
+        self::assertNotNull($constructor);
+        self::assertTrue($constructor->isPrivate());
+
+        $instance = $reflection->newInstanceWithoutConstructor();
+        $constructor->invoke($instance);
+
+        self::assertSame([], get_object_vars($instance));
+        self::assertTrue(DateParser::isValid('2024-02-29'));
+    }
+
     #[DataProvider('validDates')]
     public function test_it_accepts_real_calendar_dates_in_the_exact_format(string $date): void
     {

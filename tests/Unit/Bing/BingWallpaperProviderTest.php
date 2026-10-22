@@ -10,6 +10,8 @@ use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Client\Request;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 final class BingWallpaperProviderTest extends TestCase
 {
@@ -160,6 +162,8 @@ final class BingWallpaperProviderTest extends TestCase
      */
     public static function invalidUrls(): iterable
     {
+        yield 'whitespace' => ['https://www.bing.com/image name.jpg'];
+        yield 'backslash' => ['https://www.bing.com\\image.jpg'];
         yield 'protocol-relative URL' => ['//www.bing.com/image.jpg'];
         yield 'non-HTTPS URL' => ['http://www.bing.com/image.jpg'];
         yield 'unapproved host' => ['https://example.com/image.jpg'];
@@ -179,6 +183,93 @@ final class BingWallpaperProviderTest extends TestCase
 
         self::assertSame('INVALID_UPSTREAM_SCHEMA', $exception->errorCode);
         $this->assertRawPayloadSame($payload, $exception->rawPayload);
+    }
+
+    #[DataProvider('invalidPayloads')]
+    public function test_it_rejects_invalid_schema_with_the_original_payload(mixed $payload): void
+    {
+        $body = json_encode($payload, JSON_THROW_ON_ERROR);
+        $this->http->fake(static fn () => Factory::response($body));
+
+        $exception = $this->captureException(
+            fn () => (new BingWallpaperProvider($this->http))->retrieve('2026-08-31'),
+        );
+
+        self::assertSame('INVALID_UPSTREAM_SCHEMA', $exception->errorCode);
+        self::assertFalse($exception->retryable);
+        self::assertSame($body, json_encode($exception->rawPayload, JSON_THROW_ON_ERROR));
+    }
+
+    /** @return iterable<string, array{mixed}> */
+    public static function invalidPayloads(): iterable
+    {
+        yield 'scalar root' => [false];
+        yield 'missing images' => [[]];
+        yield 'scalar images' => [['images' => 'invalid']];
+        yield 'non-list images' => [['images' => ['named' => []]]];
+        yield 'missing date' => [['images' => [[]]]];
+        yield 'non-string date' => [['images' => [['startdate' => 20260831]]]];
+        yield 'malformed date' => [['images' => [['startdate' => '2026-08-31']]]];
+        yield 'impossible date' => [['images' => [['startdate' => '20260230']]]];
+        yield 'missing URL' => [['images' => [['startdate' => '20260831']]]];
+        yield 'empty URL' => [['images' => [['startdate' => '20260831', 'url' => '']]]];
+        yield 'non-string optional field' => [['images' => [[
+            'startdate' => '20260831', 'url' => '/image.jpg', 'title' => 42,
+        ]]]];
+    }
+
+    public function test_it_preserves_http_error_classification_when_the_body_is_not_json(): void
+    {
+        $this->http->fake(static fn () => Factory::response('Service unavailable', 503));
+
+        $exception = $this->captureException(
+            fn () => (new BingWallpaperProvider($this->http))->retrieve('2026-08-31'),
+        );
+
+        self::assertSame('UPSTREAM_UNAVAILABLE', $exception->errorCode);
+        self::assertTrue($exception->retryable);
+        self::assertNull($exception->rawPayload);
+    }
+
+    public function test_it_stops_reading_when_a_stream_returns_an_empty_chunk_before_eof(): void
+    {
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->method('eof')->willReturn(false);
+        $stream->expects(self::once())->method('read')->with(8192)->willReturn('');
+        $this->http->fake(static fn () => Factory::response($stream));
+
+        $exception = $this->captureException(
+            fn () => (new BingWallpaperProvider($this->http))->retrieve('2026-08-31'),
+        );
+
+        self::assertSame('INVALID_UPSTREAM_JSON', $exception->errorCode);
+    }
+
+    public function test_it_classifies_stream_failures_using_the_nested_cause(): void
+    {
+        $cause = new RuntimeException('The read timed out');
+        $failure = new RuntimeException('Unable to read stream', previous: $cause);
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->method('eof')->willReturn(false);
+        $stream->expects(self::once())->method('read')->willThrowException($failure);
+        $this->http->fake(static fn () => Factory::response($stream));
+
+        $exception = $this->captureException(
+            fn () => (new BingWallpaperProvider($this->http))->retrieve('2026-08-31'),
+        );
+
+        self::assertSame('UPSTREAM_TIMEOUT', $exception->errorCode);
+        self::assertTrue($exception->retryable);
+        self::assertSame($failure, $exception->getPrevious());
+        self::assertNull($exception->rawPayload);
+    }
+
+    public function test_it_rejects_unknown_source_error_codes(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unknown metadata source error code [UNKNOWN].');
+
+        new MetadataSourceException('UNKNOWN', false);
     }
 
     public function test_it_rejects_a_response_declared_larger_than_one_megabyte(): void
