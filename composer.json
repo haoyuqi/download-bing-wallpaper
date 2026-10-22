@@ -36,7 +36,7 @@
         "laravel/pint": "^1.30",
         "orchestra/testbench": "^11.0",
         "phpstan/phpstan": "^2.2",
-        "phpunit/phpunit": "^12.5"
+        "phpunit/phpunit": "^12.5.8"
     },
     "autoload": {
         "psr-4": {

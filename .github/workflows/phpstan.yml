@@ -27,6 +27,11 @@ jobs:
           php-version: '8.3'
           tools: composer:2.10.3
           coverage: none
+        env:
+          update: 'true'
+
+      - name: Verify patched PHP runtime
+        run: php .github/scripts/check-php.php
 
       - name: Install dependencies
         run: composer update --no-interaction --prefer-dist --no-progress

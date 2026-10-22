@@ -7,6 +7,8 @@ Laravel 13 package that retrieves Bing wallpaper metadata for an exact date and 
 - PHP 8.3+
 - Laravel 13
 
+Keep PHP updated to a patched release; see [runtime security requirements](SECURITY.md#php-runtime-security).
+
 ## Installation
 
 ```bash
