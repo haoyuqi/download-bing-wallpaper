@@ -1,5 +1,6 @@
 name: Bug report
 description: Report a reproducible package problem.
+title: "[Bug] "
 labels: [bug]
 body:
   - type: textarea
@@ -23,16 +24,10 @@ body:
     validations:
       required: true
   - type: textarea
-    id: actual
-    attributes:
-      label: Actual behavior
-    validations:
-      required: true
-  - type: textarea
     id: environment
     attributes:
       label: Environment
-      description: Give the installed package version or commit, exact PHP version, and exact Laravel version.
+      description: Give the installed package version, exact PHP version, and exact Laravel version without a leading v; for a development checkout, give the commit.
     validations:
       required: true
   - type: textarea
