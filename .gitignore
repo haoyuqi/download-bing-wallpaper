@@ -7,4 +7,3 @@ phpstan-tmp/
 .phpunit.cache/
 .phpunit.result.cache
 /build/
-__pycache__/

@@ -23,11 +23,6 @@ jobs:
       contents: write
       actions: read
     steps:
-      - name: Checkout tested default-branch code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          persist-credentials: false
       - name: Download measured coverage
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.1
         with:
@@ -36,8 +31,30 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
       - name: Publish coverage badge
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
-          SOURCE_BRANCH: master
-        run: python3 .github/scripts/publish-coverage-badge.py build/metrics.json
+        run: |
+          api="repos/$GITHUB_REPOSITORY"
+          test -s build/badge.json
+          master_sha="$(gh api "$api/git/ref/heads/master" --jq .object.sha)"
+          if [ "$master_sha" != "$SOURCE_SHA" ]; then
+            echo 'Skipping coverage from an older master commit'
+            exit 0
+          fi
+          branch_count="$(gh api "$api/git/matching-refs/heads/coverage-badge" --jq '[.[] | select(.ref == "refs/heads/coverage-badge")] | length')"
+          if [ "$branch_count" = 0 ]; then
+            gh api -X POST "$api/git/refs" -f ref=refs/heads/coverage-badge -f sha="$SOURCE_SHA" --silent
+          fi
+          badge_sha="$(gh api "$api/git/trees/coverage-badge" --jq '.tree[] | select(.path == "coverage.json") | .sha')"
+          if [ "$badge_sha" = "$(git hash-object build/badge.json)" ]; then
+            echo 'Coverage badge is already current'
+            exit 0
+          fi
+          content="$(base64 -w0 build/badge.json)"
+          args=(-X PUT "$api/contents/coverage.json" -f branch=coverage-badge
+            -f message='chore(ci): update measured coverage badge'
+            -f content="$content")
+          if [ -n "$badge_sha" ]; then args+=(-f sha="$badge_sha"); fi
+          gh api "${args[@]}" --silent
