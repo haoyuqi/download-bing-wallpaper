@@ -61,6 +61,10 @@ reports. The README badge updates from successful `master` test runs through the
 automatically maintained `coverage-badge` data branch; older commits and pull
 requests cannot overwrite it.
 
+The coverage gate and summary use PHP, and their regression tests run in the
+existing PHPUnit suite. Badge publishing uses GitHub CLI directly; no Python
+runtime or separate badge-publishing script is required.
+
 To measure locally with PCOV installed:
 
 ```bash

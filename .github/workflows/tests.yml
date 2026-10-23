@@ -61,10 +61,6 @@ jobs:
         if: matrix.php != '8.4'
         run: composer test
 
-      - name: Test coverage gate
-        if: matrix.php == '8.4'
-        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
-
       - name: Run tests with complete source coverage
         if: matrix.php == '8.4'
         run: |
@@ -72,20 +68,9 @@ jobs:
           php -d pcov.enabled=1 -d pcov.directory=src vendor/bin/phpunit \
             --coverage-clover build/coverage.xml --log-junit build/junit.xml
 
-      - name: Read installed runtime versions
-        if: ${{ always() && matrix.php == '8.4' }}
-        run: |
-          mkdir -p build
-          INSTALLED_COMPOSER_VERSION="$(composer --version --no-ansi | awk 'NR == 1 {print $3}')" php -r 'require "vendor/autoload.php"; echo json_encode([
-            "php" => PHP_VERSION,
-            "laravel" => ltrim(Composer\InstalledVersions::getPrettyVersion("laravel/framework"), "v"),
-            "phpunit" => ltrim(Composer\InstalledVersions::getPrettyVersion("phpunit/phpunit"), "v"),
-            "composer" => getenv("INSTALLED_COMPOSER_VERSION"),
-          ], JSON_THROW_ON_ERROR);' > build/runtime.json
-
       - name: Summarize and enforce exact line coverage
         if: ${{ always() && matrix.php == '8.4' }}
-        run: python3 .github/scripts/coverage-report.py build/coverage.xml build/junit.xml build/runtime.json build/metrics.json
+        run: COMPOSER_VERSION="$(composer --version --no-ansi | awk 'NR == 1 {print $3}')" php .github/scripts/coverage-report.php
 
       - name: Upload coverage results
         if: ${{ always() && matrix.php == '8.4' }}
