@@ -72,7 +72,6 @@ try {
         'files' => count($files), 'coverage' => $percentage,
         'tests' => $tests, 'failures' => $failures, 'skipped' => $skipped,
     ]);
-    file_put_contents($directory.'/runtime.json', json_encode($runtime, JSON_THROW_ON_ERROR).PHP_EOL);
     file_put_contents($directory.'/metrics.json', json_encode($metrics, JSON_THROW_ON_ERROR).PHP_EOL);
 
     $success = $covered === $total && $tests > 0 && $failures === 0 && $skipped === 0;
