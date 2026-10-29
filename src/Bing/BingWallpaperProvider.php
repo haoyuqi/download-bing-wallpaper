@@ -67,6 +67,8 @@ final class BingWallpaperProvider implements WallpaperMetadataProvider
             throw $this->httpException($response->status(), $this->decodeIfValid($body));
         }
 
+        // Decode twice on purpose: the raw payload must keep JSON objects and
+        // arrays distinct, while the lookup needs associative arrays.
         $rawPayload = $this->decode($body, false);
         $payload = $this->decode($body, true);
 
