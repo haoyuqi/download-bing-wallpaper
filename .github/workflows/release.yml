@@ -57,7 +57,11 @@ jobs:
     uses: ./.github/workflows/composer-quality.yml
 
   notes:
-    needs: validate
+    needs: [validate, tests, phpstan, pint, composer-quality]
+    if: ${{ !cancelled() && needs.validate.result == 'success' && (github.event_name == 'workflow_dispatch' || (needs.tests.result == 'success' && needs.phpstan.result == 'success' && needs.pint.result == 'success' && needs['composer-quality'].result == 'success')) }}
+    permissions:
+      contents: read
+      pull-requests: read
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -69,6 +73,7 @@ jobs:
         env:
           RELEASE_TAG: ${{ needs.validate.outputs.tag }}
           RELEASE_EXPECTED_SHA: ${{ needs.validate.outputs.sha }}
+          GH_TOKEN: ${{ github.token }}
           RELEASE_NOTES_TOKEN: ${{ secrets.RELEASE_NOTES_TOKEN }}
           RELEASE_NOTES_BASE_URL: ${{ secrets.RELEASE_NOTES_BASE_URL }}
           RELEASE_NOTES_MODEL: ${{ secrets.RELEASE_NOTES_MODEL }}
