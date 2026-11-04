@@ -17,32 +17,40 @@ concurrency:
 jobs:
   release-script-tests:
     name: Release script tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.14.10'
       - env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: python3 -m unittest discover -s .github/scripts -p "test_*.py"
 
   tests:
-    name: PHPUnit (PHP ${{ matrix.php }}, ${{ matrix.dependencies }})
-    runs-on: ubuntu-latest
+    name: PHPUnit (PHP ${{ matrix.display-php }}, ${{ matrix.dependencies }})
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - php: '8.3'
+          - php: '8.3.36'
+            display-php: '8.3'
             dependencies: lowest
-          - php: '8.3'
+          - php: '8.3.36'
+            display-php: '8.3'
             dependencies: stable
-          - php: '8.4'
+          - php: '8.4.27'
+            display-php: '8.4'
             dependencies: stable
-          - php: '8.5'
+          - php: '8.5.12'
+            display-php: '8.5'
             dependencies: stable
 
     steps:
@@ -56,7 +64,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           tools: composer:2.10.3
-          coverage: ${{ matrix.php == '8.4' && 'pcov' || 'none' }}
+          coverage: ${{ matrix.php == '8.4.27' && 'pcov' || 'none' }}
         env:
           update: 'true'
 
@@ -73,22 +81,22 @@ jobs:
         run: composer audit --locked --no-interaction
 
       - name: Run tests
-        if: matrix.php != '8.4'
+        if: matrix.php != '8.4.27'
         run: composer test
 
       - name: Run tests with complete source coverage
-        if: matrix.php == '8.4'
+        if: matrix.php == '8.4.27'
         run: |
           mkdir -p build
           php -d pcov.enabled=1 -d pcov.directory=src vendor/bin/phpunit \
             --coverage-clover build/coverage.xml --log-junit build/junit.xml
 
       - name: Summarize and enforce exact line coverage
-        if: ${{ always() && matrix.php == '8.4' }}
+        if: ${{ always() && matrix.php == '8.4.27' }}
         run: COMPOSER_VERSION="$(composer --version --no-ansi | awk 'NR == 1 {print $3}')" php .github/scripts/coverage-report.php
 
       - name: Upload coverage results
-        if: ${{ always() && matrix.php == '8.4' }}
+        if: ${{ always() && matrix.php == '8.4.27' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.1
         with:
           name: package-coverage
