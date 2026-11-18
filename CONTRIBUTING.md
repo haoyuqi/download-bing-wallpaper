@@ -9,6 +9,12 @@ Open an issue before proposing a substantial behavior change. Keep pull requests
 - Tests must use faked HTTP responses. Never add a request to Bing.
 - Keep `src/` at exactly 100% executable line coverage; CI fails on a single uncovered line, including in files the suite never loads.
 
+## Dependency audits
+
+CI runs `composer audit` and, in the Composer quality workflow, `osv-scanner scan --lockfile composer.lock`. The lockfile is not committed; each job resolves it with `composer update`.
+
+To defer a specific advisory, add a root `osv-scanner.toml` with one `[[IgnoredVulns]]` table per advisory, each carrying `id`, `effectiveUntil` and `reason`, and add `--config osv-scanner.toml` to the scan step. Keep every entry time-boxed and remove it as soon as the advisory is patched.
+
 ## Compatibility
 
 - The JSON envelope, its field names and order, the `status` values and the exit codes are the public contract. A breaking change requires a major version.

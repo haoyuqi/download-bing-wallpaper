@@ -7,3 +7,4 @@ phpstan-tmp/
 .phpunit.cache/
 .phpunit.result.cache
 /build/
+/osv-audit.json
