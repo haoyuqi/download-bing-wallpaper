@@ -99,6 +99,8 @@ php -d pcov.enabled=1 -d pcov.directory=src vendor/bin/phpunit \
 
 `composer check` runs manifest validation, optimized autoloading, Larastan, Pint and PHPUnit. Tests use faked HTTP responses and never contact Bing. CI requires exactly 100% executable line coverage across `src/`, including files no test loads.
 
+CI additionally runs OSV-Scanner over `composer.lock` in the Composer quality workflow. That lockfile is not committed; each job resolves it on the spot with `composer update`, so the scan covers the dependencies the build actually installed.
+
 Questions and reproducible bugs belong in [GitHub issues](https://github.com/haoyuqi/download-bing-wallpaper/issues); report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
 
 ## Release
